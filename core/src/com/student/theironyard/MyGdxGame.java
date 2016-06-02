@@ -5,22 +5,25 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class MyGdxGame extends ApplicationAdapter {
     SpriteBatch batch;
-    TextureRegion stand;
+    TextureRegion stand, jump;
 
     static final int WIDTH = 18;
     static final int HEIGHT = 26;
 
     float x, y, xv, yv;
-    boolean canJump;
+    boolean canJump, faceRight;
+    Animation walk;
+    float time;
 
     static final float MAX_JUMP_VELOCITY = 2000;
-    static final float MAX_VELOCITY = 100;
-    static final float DECELERATION = 0.99f;
+    static final float MAX_VELOCITY = 300;
+    static final float DECELERATION = 0.95f;
 
     static final int GRAVITY = -50;
 
@@ -31,6 +34,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		Texture sheet = new Texture("koalio.png");
         TextureRegion[][] tiles = TextureRegion.split(sheet, WIDTH, HEIGHT);
         stand = tiles[0][0];
+        jump = tiles[0][1];
+        walk = new Animation(0.2f, tiles[0][2], tiles[0][3], tiles[0][4]);
 
 	}
 
@@ -38,15 +43,33 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void render () {
         move();
 
+        time += Gdx.graphics.getDeltaTime();
+
+        TextureRegion img;
+        if (y > 0) {
+            img = jump;
+        }
+        else if (xv != 0) {
+            img = walk.getKeyFrame(time, true);
+        }
+        else {
+            img = stand;
+        }
+
         Gdx.gl.glClearColor(0.5f, 0.5f, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        batch.draw(stand, x, y, 0, 0, WIDTH * 3, HEIGHT * 3);
+        if(faceRight) {
+            batch.draw(img, x, y, WIDTH * 3, HEIGHT * 3);
+        }
+        else {
+            batch.draw(img, x + WIDTH * 3, y, WIDTH * -3, HEIGHT * 3 );
+        }
         batch.end();
     }
 
     public void move() {
-            if (Gdx.input.isKeyPressed(Input.Keys.UP) && canJump)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.UP) && canJump) {
                 yv = MAX_JUMP_VELOCITY;
                 canJump = false;
             }
@@ -55,9 +78,11 @@ public class MyGdxGame extends ApplicationAdapter {
             }
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
                 xv = MAX_VELOCITY;
+                faceRight = true;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                xv = MAX_VELOCITY;
+                xv = -MAX_VELOCITY;
+                faceRight = false;
             }//x++; //increases by 1 //y++; //increases by 1
 
             yv += GRAVITY;
