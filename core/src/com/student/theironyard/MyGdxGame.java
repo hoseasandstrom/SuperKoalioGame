@@ -25,7 +25,7 @@ public class MyGdxGame extends ApplicationAdapter {
     static final float MAX_VELOCITY = 300;
     static final float DECELERATION = 0.95f;
 
-    static final int GRAVITY = -50;
+    static final int GRAVITY = -100;
 
 
 	@Override
@@ -69,45 +69,45 @@ public class MyGdxGame extends ApplicationAdapter {
     }
 
     public void move() {
-            if (Gdx.input.isKeyPressed(Input.Keys.UP) && canJump) {
-                yv = MAX_JUMP_VELOCITY;
-                canJump = false;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-                yv = MAX_VELOCITY;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                xv = MAX_VELOCITY;
-                faceRight = true;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                xv = -MAX_VELOCITY;
-                faceRight = false;
-            }//x++; //increases by 1 //y++; //increases by 1
+        if (Gdx.input.isKeyPressed(Input.Keys.UP) && canJump) {
+            yv = MAX_JUMP_VELOCITY;
+            canJump = false;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)){
+            yv = -MAX_VELOCITY;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            xv = MAX_VELOCITY;
+            faceRight = true;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            xv = -MAX_VELOCITY;
+            faceRight = false;
+        }//x++; //increases by 1 //y++; //increases by 1
 
-            yv += GRAVITY;
+        yv += GRAVITY;
 
-            float delta = Gdx.graphics.getDeltaTime();
-            y += yv * delta;
-            x += xv * delta;
+        float delta = Gdx.graphics.getDeltaTime();
+        y += yv * delta;
+        x += xv * delta;
 
-            yv = decelerate(yv);
-            xv = decelerate(xv);
+        yv = decelerate(yv);
+        xv = decelerate(xv);
 
-            if(y < 0) {
-                y=0;
-                canJump = true;
-            }
-
+        if(y < 0) {
+            y=0;
+            canJump = true;
         }
 
-        public float decelerate(float velocity) {
-        velocity = DECELERATION;
+    }
+
+    public float decelerate(float velocity) {
+        velocity *= DECELERATION;
         if(Math.abs(velocity) < 1) {
             velocity = 0;
         }
         return velocity;
     }
 
-	}
+}
 
